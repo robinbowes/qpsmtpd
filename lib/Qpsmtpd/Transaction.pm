@@ -213,7 +213,16 @@ sub body_as_string {
 }
 
 sub body_fh {
-  return shift->{_body_file};
+  my ($self) = @_;
+  # Spool to disk if we weren't already doing so
+  $self->body_spool() unless $self->{_filename};
+  return $self->{_body_file};
+}
+
+sub dup_body_fh {
+  my ($self) = @_;
+  open(my $fh, '<&=', $self->body_fh);
+  return $fh;
 }
 
 sub dup_body_fh {
@@ -346,7 +355,7 @@ C<$data> can be either a plain scalar, or a reference to a scalar.
 
 =head2 body_size( )
 
-B<Depreceated>, Use I<data_size()> instead.
+B<Deprecated>, Use I<data_size()> instead.
 
 =head2 data_size( )
 
